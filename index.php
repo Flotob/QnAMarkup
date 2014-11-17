@@ -307,19 +307,24 @@ Link Color:
 
 
 <script type="text/javascript">
-
 // http://stackoverflow.com/a/11844403
-var unsaved = false;
-var sending = 0;
-$("#markup").change(function(){ //trigers change in all input fields including text type
-    unsaved = true;
+ $(function () {
+  var origText = $('#markup').val(); // save original value
+  var unsaved = false;
+  var sending = 0;
+  // triggers always, even before change event (which requires a preceding blur event)
+  $("#markup").on('keyup keypress blur change', function(){
+      unsaved = $('#markup').val() != origText
+                ? true
+                : false;
+  });
+  function unloadPage(){ 
+      if(unsaved && sending != 1){
+          return "You have unsaved changes. Do you want to leave this page and discard your changes or stay on this page?";
+      }
+  }
+  window.onbeforeunload = unloadPage;
 });
-function unloadPage(){ 
-    if(unsaved && sending != 1){
-        return "You have unsaved changes. Do you want to leave this page and discard your changes or stay on this page?";
-    }
-}
-window.onbeforeunload = unloadPage;
 
 // h/t http://answers.splunk.com/answers/125819/fill-textarea-from-a-file.html
  //External data file handling starts here
